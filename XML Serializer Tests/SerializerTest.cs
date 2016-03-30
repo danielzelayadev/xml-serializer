@@ -125,6 +125,34 @@ namespace XML_Serializer_Tests
                 "Should return the correct xml representation.");
         }
 
+        [TestMethod]
+        public void Serialize_Array_Of_Strings()
+        {
+            var serializer = new XMLSerializer();
+
+            var strings = new[] { "Hola", "Hello, world!", "", " " };
+
+            var result = serializer.Serialize(strings);
+
+            Assert.AreEqual("<array><string>Hola</string><string>Hello, world!</string>" +
+                            "<string></string><string> </string></array>", result,
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Bools()
+        {
+            var serializer = new XMLSerializer();
+
+            var bools = new[] { true, false, false, true, true };
+
+            var result = serializer.Serialize(bools);
+
+            Assert.AreEqual("<array><bool>True</bool><bool>False</bool><bool>False</bool><bool>True</bool>" +
+                            "<bool>True</bool></array>", result,
+                "Should return the correct xml representation.");
+        }
+
         private void Serialize<T>(IEnumerable<T> testValues, string tag)
         {
             var serializer = new XMLSerializer();

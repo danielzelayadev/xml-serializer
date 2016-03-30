@@ -18,8 +18,36 @@ namespace XML_Serializer
                 return SerializeNumberArray(obj as IEnumerable);
             if (obj is char[])
                 return SerializeCharArray(obj as IEnumerable);
+            if (obj is string[])
+                return SerializeStringArray(obj as IEnumerable);
+            if (obj is bool[])
+                return SerializeBoolArray(obj as IEnumerable);
 
             return "";
+        }
+
+        private string SerializeBoolArray(IEnumerable bools)
+        {
+            var elements = "";
+
+            foreach (var b in bools)
+            {
+                elements += SerializeBool((bool)b);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeStringArray(IEnumerable strings)
+        {
+            var elements = "";
+
+            foreach (var str in strings)
+            {
+                elements += SerializeString((string)str);
+            }
+
+            return "<array>" + elements + "</array>";
         }
 
         private string SerializeCharArray(IEnumerable charArray)
