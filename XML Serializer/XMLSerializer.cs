@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace XML_Serializer
 {
-    public class Class1
+    public class XMLSerializer
     {
+        public string Serialize(int i)
+        {
+            return "";
+        }
     }
 }
