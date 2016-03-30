@@ -25,8 +25,22 @@ namespace XML_Serializer
                 return SerializeBoolArray(obj as IEnumerable);
             if (obj is DateTime)
                 return SerializeDate((DateTime)obj);
+            if (obj is DateTime[])
+                return SerializeDateArray(obj as IEnumerable);
 
             return "";
+        }
+
+        private string SerializeDateArray(IEnumerable dates)
+        {
+            var elements = "";
+
+            foreach (var date in dates)
+            {
+                elements += SerializeDate((DateTime)date);
+            }
+
+            return "<array>" + elements + "</array>";
         }
 
         private string SerializeDate(DateTime date)
