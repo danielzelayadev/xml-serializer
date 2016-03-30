@@ -48,6 +48,18 @@ namespace XML_Serializer_Tests
             Serialize(new[] { "Hello!!!!", "h", "Hey", "ddijeufn3893848", "Lorem ipsum lolis" }, "string");
         }
 
+        [TestMethod]
+        public void Serialize_Char()
+        {
+            Serialize(new[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'k' }, "char");
+        }
+
+        [TestMethod]
+        public void Serialize_Bool()
+        {
+            Serialize(new[] { true, false }, "bool");
+        }
+
         private void Serialize<T>(IEnumerable<T> testValues, string tag)
         {
             var serializer = new XMLSerializer();

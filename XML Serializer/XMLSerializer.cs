@@ -8,8 +8,22 @@
                 return SerializeNumber(obj);
             if (obj is string)
                 return SerializeString(obj.ToString());
+            if (obj is char)
+                return SerializeChar((char)obj);
+            if (obj is bool)
+                return SerializeBool((bool) obj);
 
             return "";
+        }
+
+        private string SerializeBool(bool b)
+        {
+            return "<bool>" + b + "</bool>";
+        }
+
+        private string SerializeChar(char c)
+        {
+            return "<char>" + c + "</char>";
         }
 
         private string SerializeString(string str)
