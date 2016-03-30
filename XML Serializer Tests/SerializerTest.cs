@@ -60,6 +60,71 @@ namespace XML_Serializer_Tests
             Serialize(new[] { true, false }, "bool");
         }
 
+        [TestMethod]
+        public void Serialize_Array_Of_Ints()
+        {
+            var serializer = new XMLSerializer();
+
+            var ints = new[] { 100, 50 };
+
+            var result = serializer.Serialize(ints);
+
+            Assert.AreEqual("<array><num>100</num><num>50</num></array>", result, 
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Longs()
+        {
+            var serializer = new XMLSerializer();
+
+            var longs = new[] { 100L, 50L };
+
+            var result = serializer.Serialize(longs);
+
+            Assert.AreEqual("<array><num>100</num><num>50</num></array>", result,
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Floats()
+        {
+            var serializer = new XMLSerializer();
+
+            var floats = new[] { 100.5F, 50.5939F };
+
+            var result = serializer.Serialize(floats);
+
+            Assert.AreEqual("<array><num>100.5</num><num>50.5939</num></array>", result,
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Doubles()
+        {
+            var serializer = new XMLSerializer();
+
+            var doubles = new[] { 100.5, 50.833 };
+
+            var result = serializer.Serialize(doubles);
+
+            Assert.AreEqual("<array><num>100.5</num><num>50.833</num></array>", result,
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Chars()
+        {
+            var serializer = new XMLSerializer();
+
+            var chars = new[] { 'a', 'b', 'c' };
+
+            var result = serializer.Serialize(chars);
+
+            Assert.AreEqual("<array><char>a</char><char>b</char><char>c</char></array>", result,
+                "Should return the correct xml representation.");
+        }
+
         private void Serialize<T>(IEnumerable<T> testValues, string tag)
         {
             var serializer = new XMLSerializer();
