@@ -1,4 +1,6 @@
-﻿namespace XML_Serializer
+﻿using System.Collections;
+
+namespace XML_Serializer
 {
     public class XMLSerializer
     {
@@ -8,8 +10,78 @@
                 return SerializeNumber(obj);
             if (obj is string)
                 return SerializeString(obj.ToString());
+            if (obj is char)
+                return SerializeChar((char)obj);
+            if (obj is bool)
+                return SerializeBool((bool) obj);
+            if (IsNumberArray(obj))
+                return SerializeNumberArray(obj as IEnumerable);
+            if (obj is char[])
+                return SerializeCharArray(obj as IEnumerable);
+            if (obj is string[])
+                return SerializeStringArray(obj as IEnumerable);
+            if (obj is bool[])
+                return SerializeBoolArray(obj as IEnumerable);
 
             return "";
+        }
+
+        private string SerializeBoolArray(IEnumerable bools)
+        {
+            var elements = "";
+
+            foreach (var b in bools)
+            {
+                elements += SerializeBool((bool)b);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeStringArray(IEnumerable strings)
+        {
+            var elements = "";
+
+            foreach (var str in strings)
+            {
+                elements += SerializeString((string)str);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeCharArray(IEnumerable charArray)
+        {
+            var elements = "";
+
+            foreach (var c in charArray)
+            {
+                elements += SerializeChar((char)c);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeNumberArray(IEnumerable numArray)
+        {
+            var elements = "";
+
+            foreach (var num in numArray)
+            {
+                elements += SerializeNumber(num);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeBool(bool b)
+        {
+            return "<bool>" + b + "</bool>";
+        }
+
+        private string SerializeChar(char c)
+        {
+            return "<char>" + c + "</char>";
         }
 
         private string SerializeString(string str)
@@ -20,6 +92,11 @@
         private string SerializeNumber(object num)
         {
             return "<num>" + num.ToString() + "</num>";
+        }
+
+        private bool IsNumberArray(object obj)
+        {
+            return obj is int[] || obj is long[] || obj is float[] || obj is double[];
         }
 
         private bool IsNumber(object obj)
