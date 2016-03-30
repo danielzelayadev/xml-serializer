@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using XML_Serializer;
 
@@ -59,6 +60,35 @@ namespace XML_Serializer_Tests
         {
             Serialize(new[] { true, false }, "bool");
         }
+
+        [TestMethod]
+        public void Serialize_Date_Only()
+        {
+            var serializer = new XMLSerializer();
+
+            var date = new DateTime(2015, 10, 6);
+
+            var result = serializer.Serialize(date);
+
+            Assert.AreEqual("<date><year>2015</year><month>10</month><day>6</day>" +
+                            "<hour>0</hour><minute>0</minute><second>0</second></date>", result, 
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Date_And_Time()
+        {
+            var serializer = new XMLSerializer();
+
+            var date = new DateTime(2015, 10, 6, 3, 30, 15);
+
+            var result = serializer.Serialize(date);
+
+            Assert.AreEqual("<date><year>2015</year><month>10</month><day>6</day>" +
+                            "<hour>3</hour><minute>30</minute><second>15</second></date>", result,
+                "Should return the correct xml representation.");
+        }
+
 
         [TestMethod]
         public void Serialize_Array_Of_Ints()
