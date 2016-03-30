@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace XML_Serializer
 {
@@ -22,8 +23,36 @@ namespace XML_Serializer
                 return SerializeStringArray(obj as IEnumerable);
             if (obj is bool[])
                 return SerializeBoolArray(obj as IEnumerable);
+            if (obj is DateTime)
+                return SerializeDate((DateTime)obj);
+            if (obj is DateTime[])
+                return SerializeDateArray(obj as IEnumerable);
 
             return "";
+        }
+
+        private string SerializeDateArray(IEnumerable dates)
+        {
+            var elements = "";
+
+            foreach (var date in dates)
+            {
+                elements += SerializeDate((DateTime)date);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeDate(DateTime date)
+        {
+            var year = "<year>" + date.Year + "</year>";
+            var month = "<month>" + date.Month + "</month>";
+            var day = "<day>" + date.Day + "</day>";
+            var hour = "<hour>" + date.Hour + "</hour>";
+            var minute = "<minute>" + date.Minute + "</minute>";
+            var second = "<second>" + date.Second + "</second>";
+
+            return "<date>" + year +  month + day + hour + minute + second + "</date>";
         }
 
         private string SerializeBoolArray(IEnumerable bools)

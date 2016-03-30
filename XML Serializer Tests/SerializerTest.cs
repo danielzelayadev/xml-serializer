@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using XML_Serializer;
 
@@ -59,6 +60,35 @@ namespace XML_Serializer_Tests
         {
             Serialize(new[] { true, false }, "bool");
         }
+
+        [TestMethod]
+        public void Serialize_Date_Only()
+        {
+            var serializer = new XMLSerializer();
+
+            var date = new DateTime(2015, 10, 6);
+
+            var result = serializer.Serialize(date);
+
+            Assert.AreEqual("<date><year>2015</year><month>10</month><day>6</day>" +
+                            "<hour>0</hour><minute>0</minute><second>0</second></date>", result, 
+                "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Date_And_Time()
+        {
+            var serializer = new XMLSerializer();
+
+            var date = new DateTime(2015, 10, 6, 3, 30, 15);
+
+            var result = serializer.Serialize(date);
+
+            Assert.AreEqual("<date><year>2015</year><month>10</month><day>6</day>" +
+                            "<hour>3</hour><minute>30</minute><second>15</second></date>", result,
+                "Should return the correct xml representation.");
+        }
+
 
         [TestMethod]
         public void Serialize_Array_Of_Ints()
@@ -151,6 +181,48 @@ namespace XML_Serializer_Tests
             Assert.AreEqual("<array><bool>True</bool><bool>False</bool><bool>False</bool><bool>True</bool>" +
                             "<bool>True</bool></array>", result,
                 "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Dates()
+        {
+            var serializer = new XMLSerializer();
+
+            var dates = new[]
+            {
+                new DateTime(2000, 12, 5),
+                new DateTime(2015, 2, 2, 8, 5, 10),
+                new DateTime(2003, 10, 1, 11, 11, 11),
+                new DateTime(1900, 7, 12), 
+            };
+
+            var result = serializer.Serialize(dates);
+
+            var expected = "<array>" + 
+
+                           "<date>" + 
+                           "<year>2000</year><month>12</month><day>5</day><hour>0" +
+                           "</hour><minute>0</minute><second>0</second>" +
+                           "</date>" +
+
+                           "<date>" + 
+                           "<year>2015</year><month>2</month><day>2</day>" +
+                           "<hour>8</hour><minute>5</minute><second>10</second>" +
+                           "</date>" +
+
+                           "<date>" + 
+                           "<year>2003</year><month>10</month><day>1</day>" +
+                           "<hour>11</hour><minute>11</minute><second>11</second>" +
+                           "</date>" +
+
+                           "<date>" +
+                           "<year>1900</year><month>7</month><day>12</day>" +
+                           "<hour>0</hour><minute>0</minute><second>0</second>" +
+                           "</date>" +
+
+                           "</array>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
         }
 
         private void Serialize<T>(IEnumerable<T> testValues, string tag)
