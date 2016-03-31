@@ -11,28 +11,7 @@ namespace XML_Serializer
             if (obj == null)
                 throw new ArgumentNullException();
 
-            if (IsNumber(obj))
-                return SerializeNumber(obj);
-            if (obj is string)
-                return SerializeString(obj.ToString());
-            if (obj is char)
-                return SerializeChar((char)obj);
-            if (obj is bool)
-                return SerializeBool((bool) obj);
-            if (IsNumberArray(obj))
-                return SerializeNumberArray(obj as IEnumerable);
-            if (obj is char[])
-                return SerializeCharArray((IEnumerable) obj);
-            if (obj is string[])
-                return SerializeStringArray((IEnumerable) obj);
-            if (obj is bool[])
-                return SerializeBoolArray((IEnumerable) obj);
-            if (obj is DateTime)
-                return SerializeDate((DateTime)obj);
-            if (obj is DateTime[])
-                return SerializeDateArray((IEnumerable) obj);
-
-            return obj is object[] ? SerializeOtherObjectArray((IEnumerable) obj) : SerializeOtherObject(obj);
+            return DetermineSerialization(obj);
         }
 
         private string SerializeOtherObjectArray(IEnumerable objs)
@@ -60,10 +39,13 @@ namespace XML_Serializer
                 var propName = propInfo.Name;
                 var propValue = propInfo.GetValue(obj);
 
-                if ( PropertyIsAValidClass(propInfo) && propValue != null )
+                if ( propValue is object[] )
+                    xml += ReplaceRootTagName(DetermineSerialization(propValue), propName);
+
+                else if (PropertyIsAValidClass(propInfo) && propValue != null)
                     xml += ReplaceRootTagName(SerializeOtherObject(propValue), propName);
 
-                else 
+                else
                     xml += "<" + propName + ">" + propValue + "</" + propName + ">";
             }
 
@@ -193,6 +175,32 @@ namespace XML_Serializer
         private bool IsNumber(object obj)
         {
             return obj is int || obj is long || obj is float || obj is double;
+        }
+
+        private string DetermineSerialization(object obj)
+        {
+            if (IsNumber(obj))
+                return SerializeNumber(obj);
+            if (obj is string)
+                return SerializeString(obj.ToString());
+            if (obj is char)
+                return SerializeChar((char)obj);
+            if (obj is bool)
+                return SerializeBool((bool)obj);
+            if (IsNumberArray(obj))
+                return SerializeNumberArray(obj as IEnumerable);
+            if (obj is char[])
+                return SerializeCharArray((IEnumerable)obj);
+            if (obj is string[])
+                return SerializeStringArray((IEnumerable)obj);
+            if (obj is bool[])
+                return SerializeBoolArray((IEnumerable)obj);
+            if (obj is DateTime)
+                return SerializeDate((DateTime)obj);
+            if (obj is DateTime[])
+                return SerializeDateArray((IEnumerable)obj);
+
+            return obj is object[] ? SerializeOtherObjectArray((IEnumerable)obj) : SerializeOtherObject(obj);
         }
 
     }

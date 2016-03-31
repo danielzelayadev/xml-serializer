@@ -144,6 +144,53 @@ namespace XML_Serializer_Tests
         }
 
         [TestMethod]
+        public void Serialize_Class_With_Array_Property()
+        {
+            var serializer = new XMLSerializer();
+
+            var merchant = new Merchant
+            {
+                Name = "Al' Mazhiik",
+                Race = "Khajiit",
+                Inventory = new[]
+                {
+                    "Katana",
+                    "Steel Cuirass",
+                    "Leather Dagger",
+                    "Health Potion"
+                },
+                Items = new[]
+                {
+                    new Item("Lol1"),
+                    new Item("Lol2"),
+                    new Item("Lol3"),
+                    new Item("Lol4")
+                }
+            };
+
+            var result = serializer.Serialize(merchant);
+
+            var expected = "<Merchant>" +
+                               "<Name>Al' Mazhiik</Name>" +
+                               "<Race>Khajiit</Race>" +
+                               "<Inventory>" +
+                                   "<string>Katana</string>" +
+                                   "<string>Steel Cuirass</string>" +
+                                   "<string>Leather Dagger</string>" +
+                                   "<string>Health Potion</string>" +
+                               "</Inventory>" +
+                               "<Items>" +
+                                    "<Item><Name>Lol1</Name></Item>" +
+                                    "<Item><Name>Lol2</Name></Item>" +
+                                    "<Item><Name>Lol3</Name></Item>" +
+                                    "<Item><Name>Lol4</Name></Item>" +
+                               "</Items>" +
+                           "</Merchant>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Serialize_Null()
         {
