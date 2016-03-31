@@ -72,7 +72,8 @@ namespace XML_Serializer
             else if (PropertyIsAValidClass(propInfo) && propValue != null)
                 propertyXml = ReplaceRootTagName( SerializeClassObject(propValue), propName );
 
-            else propertyXml = "<" + propName + ">" + propValue + "</" + propName + ">";
+            else 
+                propertyXml = "<" + propName + ">" + propValue + "</" + propName + ">";
 
             return propertyXml;
         }
