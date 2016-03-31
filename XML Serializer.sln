@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
@@ -6,8 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML Serializer", "XML Serializer\XML Serializer.csproj", "{115DC381-1D8F-40D3-975C-860290433BDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML Serializer Tests", "XML Serializer Tests\XML Serializer Tests.csproj", "{40A1E739-FB80-4557-82DC-E23A3168EA03}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{B81C70CB-CA55-488D-A53F-08DF015A42FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +21,6 @@ Global
 		{40A1E739-FB80-4557-82DC-E23A3168EA03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{40A1E739-FB80-4557-82DC-E23A3168EA03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{40A1E739-FB80-4557-82DC-E23A3168EA03}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B81C70CB-CA55-488D-A53F-08DF015A42FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B81C70CB-CA55-488D-A53F-08DF015A42FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B81C70CB-CA55-488D-A53F-08DF015A42FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B81C70CB-CA55-488D-A53F-08DF015A42FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
