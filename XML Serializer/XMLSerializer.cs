@@ -9,7 +9,7 @@ namespace XML_Serializer
         public string Serialize(object obj)
         {
             if (obj == null)
-                return "";
+                throw new ArgumentNullException();
 
             if (IsNumber(obj))
                 return SerializeNumber(obj);
@@ -22,17 +22,17 @@ namespace XML_Serializer
             if (IsNumberArray(obj))
                 return SerializeNumberArray(obj as IEnumerable);
             if (obj is char[])
-                return SerializeCharArray(obj as IEnumerable);
+                return SerializeCharArray((IEnumerable) obj);
             if (obj is string[])
-                return SerializeStringArray(obj as IEnumerable);
+                return SerializeStringArray((IEnumerable) obj);
             if (obj is bool[])
-                return SerializeBoolArray(obj as IEnumerable);
+                return SerializeBoolArray((IEnumerable) obj);
             if (obj is DateTime)
                 return SerializeDate((DateTime)obj);
             if (obj is DateTime[])
-                return SerializeDateArray(obj as IEnumerable);
+                return SerializeDateArray((IEnumerable) obj);
 
-            return obj is object[] ? SerializeOtherObjectArray(obj as IEnumerable) : SerializeOtherObject(obj);
+            return obj is object[] ? SerializeOtherObjectArray((IEnumerable) obj) : SerializeOtherObject(obj);
         }
 
         private string SerializeOtherObjectArray(IEnumerable objs)

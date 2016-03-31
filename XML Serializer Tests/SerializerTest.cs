@@ -144,13 +144,10 @@ namespace XML_Serializer_Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void Serialize_Null()
         {
-            var serializer = new XMLSerializer();
-
-            var result = serializer.Serialize(null);
-
-            Assert.AreEqual("", result, "Should return an empty string.");
+            new XMLSerializer().Serialize(null);
         }
 
 
