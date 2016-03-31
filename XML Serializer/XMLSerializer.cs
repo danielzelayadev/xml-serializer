@@ -46,28 +46,34 @@ namespace XML_Serializer
             var xml = "";
 
             var type = obj.GetType();
-
             var className = TrimToClassName(type.FullName);
+            var properties = type.GetProperties();
 
-            foreach (var propInfo in type.GetProperties())
-            {
-                var attrs = propInfo.GetCustomAttributes(true);
-                var XMLName = GetXMLName(attrs);
-
-                var propName = XMLName.Length > 0 ? XMLName : propInfo.Name;
-                var propValue = propInfo.GetValue(obj);
-
-                if (propValue is object[])
-                    xml += ReplaceRootTagName(DetermineSerialization(propValue), propName);
-
-                else if (PropertyIsAValidClass(propInfo) && propValue != null)
-                    xml += ReplaceRootTagName(SerializeOtherObject(propValue), propName);
-
-                else
-                    xml += "<" + propName + ">" + propValue + "</" + propName + ">";
-            }
+            foreach (var propInfo in properties)
+                xml += SerializeProperty(propInfo, obj);
 
             return "<" + className + ">" + xml + "</" + className + ">";
+        }
+
+        private string SerializeProperty(PropertyInfo propInfo, object obj)
+        {
+            var propertyXml = "";
+
+            var attrs = propInfo.GetCustomAttributes(true);
+            var XMLName = GetXMLName(attrs);
+
+            var propName = XMLName.Length > 0 ? XMLName : propInfo.Name;
+            var propValue = propInfo.GetValue(obj);
+
+            if (propValue is object[])
+                propertyXml = ReplaceRootTagName( DetermineSerialization(propValue), propName );
+
+            else if (PropertyIsAValidClass(propInfo) && propValue != null)
+                propertyXml = ReplaceRootTagName( SerializeOtherObject(propValue), propName );
+
+            else propertyXml = "<" + propName + ">" + propValue + "</" + propName + ">";
+
+            return propertyXml;
         }
 
         private string SerializeArray(IEnumerable objs, SerializeCallback sc)
