@@ -141,12 +141,16 @@ namespace XML_Serializer
 
         private bool IsNumber(object obj)
         {
-            return obj is int || obj is long || obj is float || obj is double;
+            return obj is int  || obj is long    || obj is float || obj is double ||
+                   obj is byte || obj is decimal || obj is sbyte || obj is short  ||
+                   obj is uint || obj is ulong   || obj is ushort;
         }
 
         private bool IsNumberArray(object obj)
         {
-            return obj is int[] || obj is long[] || obj is float[] || obj is double[];
+            return obj is int[]  || obj is long[]    || obj is float[] || obj is double[] ||
+                   obj is byte[] || obj is decimal[] || obj is sbyte[] || obj is short[]  ||
+                   obj is uint[] || obj is ulong[]   || obj is ushort[];
         }
 
         private string TrimToClassName(string fullName)
