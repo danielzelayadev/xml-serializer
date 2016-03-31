@@ -44,6 +44,48 @@ namespace XML_Serializer_Tests
         }
 
         [TestMethod]
+        public void Serialize_UInt()
+        {
+            Serialize(new[] { 123U, 12U, 10U, 300U, 4294967290U }, "num");
+        }
+
+        [TestMethod]
+        public void Serialize_UShort()
+        {
+            Serialize(new ushort[] { 65535, 6000, 300, 30 }, "num");
+        }
+
+        [TestMethod]
+        public void Serialize_Byte()
+        {
+            Serialize(new byte[] { 0, 200, 255, 144, 16, 64 }, "num");
+        }
+
+        [TestMethod]
+        public void Serialize_Short()
+        {
+            Serialize(new short[] { -100, -32768, -100, 23000, 32767 }, "num");
+        }
+
+        [TestMethod]
+        public void Serialize_ULong()
+        {
+            Serialize(new[] { 8UL, 100000000000000000UL, 9223372036854775808UL, 8446744073709551615UL }, "num");
+        }
+
+        [TestMethod]
+        public void Serialize_Decimal()
+        {
+            Serialize(new[] { 300.5m, 200.453m, 99.9m, 9.2m }, "num");
+        }
+
+        [TestMethod]
+        public void Serialize_SByte()
+        {
+            Serialize(new[] { -128, -100, 127, 100, 30, 40, -50 }, "num");
+        }
+
+        [TestMethod]
         public void Serialize_String()
         {
             Serialize(new[] { "Hello!!!!", "h", "Hey", "ddijeufn3893848", "Lorem ipsum lolis" }, "string");
