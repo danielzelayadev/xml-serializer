@@ -6,6 +6,7 @@ namespace XML_Serializer
 {
     public class XMLSerializer
     {
+
         private delegate string SerializeCallback(object obj);
 
         public string Serialize(object obj)
@@ -13,7 +14,7 @@ namespace XML_Serializer
             if (obj == null)
                 throw new ArgumentNullException();
 
-            return DetermineSerialization(obj);
+            return GetRespectiveSerialization(obj);
         }
 
 
@@ -66,7 +67,7 @@ namespace XML_Serializer
             var propValue = propInfo.GetValue(obj);
 
             if (propValue is object[])
-                propertyXml = ReplaceRootTagName( DetermineSerialization(propValue), propName );
+                propertyXml = ReplaceRootTagName( GetArraySerialization(propValue), propName );
 
             else if (PropertyIsAValidClass(propInfo) && propValue != null)
                 propertyXml = ReplaceRootTagName( SerializeOtherObject(propValue), propName );
@@ -94,8 +95,11 @@ namespace XML_Serializer
       ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        private string DetermineSerialization(object obj)
+        private string GetRespectiveSerialization(object obj)
         {
+            if (obj.GetType().IsArray)
+                return GetArraySerialization(obj);
+
             if (IsNumber(obj))
                 return SerializePrimitive(obj, "num");
 
@@ -108,6 +112,14 @@ namespace XML_Serializer
             if (obj is bool)
                 return SerializePrimitive(obj, "bool");
 
+            if (obj is DateTime)
+                return SerializeDate((DateTime)obj);
+
+            return SerializeOtherObject(obj);
+        }
+
+        private string GetArraySerialization(object obj)
+        {
             if (IsNumberArray(obj))
                 return SerializeArray((IEnumerable) obj, o => SerializePrimitive(o, "num"));
 
@@ -120,16 +132,10 @@ namespace XML_Serializer
             if (obj is bool[])
                 return SerializeArray((IEnumerable)obj, o => SerializePrimitive(o, "bool"));
 
-            if (obj is DateTime)
-                return SerializeDate((DateTime)obj);
-
             if (obj is DateTime[])
                 return SerializeArray((IEnumerable)obj, o => SerializeDate((DateTime)o));
-
-            if (obj is object[])
-                return SerializeArray((IEnumerable)obj, SerializeOtherObject);
-
-            return SerializeOtherObject(obj);
+            
+            return SerializeArray((IEnumerable)obj, SerializeOtherObject);
         }
 
         private bool IsNumber(object obj)
