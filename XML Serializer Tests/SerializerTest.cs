@@ -89,6 +89,41 @@ namespace XML_Serializer_Tests
                 "Should return the correct xml representation.");
         }
 
+        [TestMethod]
+        public void Serialize_Class()
+        {
+            var serializer = new XMLSerializer();
+
+            var person = new Person
+            {
+                 Id = 100,
+                 FirstName = "Daniel",
+                 LastName = "Zelaya",
+                 Age = 20,
+                 Drives = true,
+                 BloodType = 'O',
+                 Birthday = new DateTime(1995, 10, 1, 23, 45, 0)
+            };
+
+            var result = serializer.Serialize(person);
+
+            Assert.AreEqual("<Person>" +
+                            "<Id>100</Id><FirstName>Daniel</FirstName><LastName>Zelaya</LastName><Age>20</Age>" +
+                            "<Drives>True</Drives><BloodType>O</BloodType><Birthday>10/1/1995 11:45:00 PM</Birthday>" +
+                            "</Person>", 
+                            result, "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Null()
+        {
+            var serializer = new XMLSerializer();
+
+            var result = serializer.Serialize(null);
+
+            Assert.AreEqual("", result, "Should return an empty string.");
+        }
+
 
         [TestMethod]
         public void Serialize_Array_Of_Ints()

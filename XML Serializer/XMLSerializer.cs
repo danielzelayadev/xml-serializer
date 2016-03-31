@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 
 namespace XML_Serializer
 {
@@ -7,6 +8,9 @@ namespace XML_Serializer
     {
         public string Serialize(object obj)
         {
+            if (obj == null)
+                return "";
+
             if (IsNumber(obj))
                 return SerializeNumber(obj);
             if (obj is string)
@@ -28,7 +32,26 @@ namespace XML_Serializer
             if (obj is DateTime[])
                 return SerializeDateArray(obj as IEnumerable);
 
-            return "";
+            return SerializeOtherObject(obj);
+        }
+
+        private string SerializeOtherObject(object obj)
+        {
+            var xml = "";
+
+            Type type = obj.GetType();
+
+            var className = TrimToClassName(type.FullName);
+
+            foreach (var propInfo in type.GetProperties())
+            {
+                var propName = propInfo.Name;
+                var propValue = propInfo.GetValue(obj);
+
+                xml += "<" + propName + ">" + propValue + "</" + propName + ">";
+            }
+
+            return "<" + className + ">" + xml + "</" + className + ">";
         }
 
         private string SerializeDateArray(IEnumerable dates)
@@ -121,6 +144,13 @@ namespace XML_Serializer
         private string SerializeNumber(object num)
         {
             return "<num>" + num.ToString() + "</num>";
+        }
+
+        private string TrimToClassName(string fullName)
+        {
+            var lastDotIndex = fullName.LastIndexOf(".");
+
+            return fullName.Substring(lastDotIndex + 1);
         }
 
         private bool IsNumberArray(object obj)
