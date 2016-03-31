@@ -32,7 +32,19 @@ namespace XML_Serializer
             if (obj is DateTime[])
                 return SerializeDateArray(obj as IEnumerable);
 
-            return SerializeOtherObject(obj);
+            return obj is object[] ? SerializeOtherObjectArray(obj as IEnumerable) : SerializeOtherObject(obj);
+        }
+
+        private string SerializeOtherObjectArray(IEnumerable objs)
+        {
+            var elements = "";
+
+            foreach (var obj in objs)
+            {
+                elements += SerializeOtherObject(obj);
+            }
+
+            return "<array>" + elements + "</array>";
         }
 
         private string SerializeOtherObject(object obj)

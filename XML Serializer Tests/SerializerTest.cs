@@ -260,6 +260,48 @@ namespace XML_Serializer_Tests
             Assert.AreEqual(expected, result, "Should return correct xml representation.");
         }
 
+        [TestMethod]
+        public void Serialize_Array_Of_Classes()
+        {
+            var serializer = new XMLSerializer();
+
+            var people = new[] {
+                new Person
+                {
+                    Id = 100
+                },
+                new Person(),
+                new Person
+                {
+                    Id = 200,
+                    FirstName = "Lolis"
+                }
+            };
+
+            var result = serializer.Serialize(people);
+
+            var expected = "<array>" +
+
+                           "<Person>" +
+                           "<Id>100</Id><FirstName></FirstName><LastName></LastName><Age>0</Age>" +
+                           "<Drives>False</Drives><BloodType>"+'\0'+"</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
+                           "</Person>" +
+
+                           "<Person>" +
+                           "<Id>0</Id><FirstName></FirstName><LastName></LastName><Age>0</Age>" +
+                           "<Drives>False</Drives><BloodType>" + '\0' + "</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
+                           "</Person>" +
+
+                           "<Person>" +
+                           "<Id>200</Id><FirstName>Lolis</FirstName><LastName></LastName><Age>0</Age>" +
+                           "<Drives>False</Drives><BloodType>" + '\0' + "</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
+                           "</Person>" +
+
+                           "</array>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
         private void Serialize<T>(IEnumerable<T> testValues, string tag)
         {
             var serializer = new XMLSerializer();
