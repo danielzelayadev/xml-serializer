@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Reflection;
 
 namespace XML_Serializer
 {
@@ -7,28 +8,51 @@ namespace XML_Serializer
     {
         public string Serialize(object obj)
         {
-            if (IsNumber(obj))
-                return SerializeNumber(obj);
-            if (obj is string)
-                return SerializeString(obj.ToString());
-            if (obj is char)
-                return SerializeChar((char)obj);
-            if (obj is bool)
-                return SerializeBool((bool) obj);
-            if (IsNumberArray(obj))
-                return SerializeNumberArray(obj as IEnumerable);
-            if (obj is char[])
-                return SerializeCharArray(obj as IEnumerable);
-            if (obj is string[])
-                return SerializeStringArray(obj as IEnumerable);
-            if (obj is bool[])
-                return SerializeBoolArray(obj as IEnumerable);
-            if (obj is DateTime)
-                return SerializeDate((DateTime)obj);
-            if (obj is DateTime[])
-                return SerializeDateArray(obj as IEnumerable);
+            if (obj == null)
+                throw new ArgumentNullException();
 
-            return "";
+            return DetermineSerialization(obj);
+        }
+
+        private string SerializeOtherObjectArray(IEnumerable objs)
+        {
+            var elements = "";
+
+            foreach (var obj in objs)
+            {
+                elements += SerializeOtherObject(obj);
+            }
+
+            return "<array>" + elements + "</array>";
+        }
+
+        private string SerializeOtherObject(object obj)
+        {
+            var xml = "";
+
+            var type = obj.GetType();
+
+            var className = TrimToClassName(type.FullName);
+
+            foreach (var propInfo in type.GetProperties())
+            {
+                var attrs = propInfo.GetCustomAttributes(true);
+                var XMLName = GetXMLName(attrs);
+
+                var propName =  XMLName.Length > 0 ? XMLName : propInfo.Name;
+                var propValue = propInfo.GetValue(obj);
+
+                if ( propValue is object[] )
+                    xml += ReplaceRootTagName(DetermineSerialization(propValue), propName);
+
+                else if (PropertyIsAValidClass(propInfo) && propValue != null)
+                    xml += ReplaceRootTagName(SerializeOtherObject(propValue), propName);
+
+                else
+                    xml += "<" + propName + ">" + propValue + "</" + propName + ">";
+            }
+
+            return "<" + className + ">" + xml + "</" + className + ">";
         }
 
         private string SerializeDateArray(IEnumerable dates)
@@ -123,6 +147,41 @@ namespace XML_Serializer
             return "<num>" + num.ToString() + "</num>";
         }
 
+        private string GetXMLName(object[] attrs)
+        {
+            foreach (var attr in attrs)
+            {
+                XMLNameAttribute xattr = attr as XMLNameAttribute;
+
+                if (xattr != null) return xattr.Name;
+            }
+
+            return "";
+        }
+
+        private bool PropertyIsAValidClass(PropertyInfo propInfo)
+        {
+            return propInfo.PropertyType.IsClass &&
+                   propInfo.PropertyType.ToString() != "System.String" &&
+                   propInfo.PropertyType.ToString() != "System.DateTime";
+        }
+
+        private string ReplaceRootTagName(string xml, string newName)
+        {
+            var openRootTagEndIndex = xml.IndexOf(">");
+
+            var oldName = xml.Substring(1, openRootTagEndIndex - 1);
+
+            return xml.Replace(oldName, newName); ;
+        }
+
+        private string TrimToClassName(string fullName)
+        {
+            var lastDotIndex = fullName.LastIndexOf(".");
+
+            return fullName.Substring(lastDotIndex + 1);
+        }
+
         private bool IsNumberArray(object obj)
         {
             return obj is int[] || obj is long[] || obj is float[] || obj is double[];
@@ -131,6 +190,32 @@ namespace XML_Serializer
         private bool IsNumber(object obj)
         {
             return obj is int || obj is long || obj is float || obj is double;
+        }
+
+        private string DetermineSerialization(object obj)
+        {
+            if (IsNumber(obj))
+                return SerializeNumber(obj);
+            if (obj is string)
+                return SerializeString(obj.ToString());
+            if (obj is char)
+                return SerializeChar((char)obj);
+            if (obj is bool)
+                return SerializeBool((bool)obj);
+            if (IsNumberArray(obj))
+                return SerializeNumberArray(obj as IEnumerable);
+            if (obj is char[])
+                return SerializeCharArray((IEnumerable)obj);
+            if (obj is string[])
+                return SerializeStringArray((IEnumerable)obj);
+            if (obj is bool[])
+                return SerializeBoolArray((IEnumerable)obj);
+            if (obj is DateTime)
+                return SerializeDate((DateTime)obj);
+            if (obj is DateTime[])
+                return SerializeDateArray((IEnumerable)obj);
+
+            return obj is object[] ? SerializeOtherObjectArray((IEnumerable)obj) : SerializeOtherObject(obj);
         }
 
     }

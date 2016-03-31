@@ -89,6 +89,139 @@ namespace XML_Serializer_Tests
                 "Should return the correct xml representation.");
         }
 
+        [TestMethod]
+        public void Serialize_Class()
+        {
+            var serializer = new XMLSerializer();
+
+            var person = new Person
+            {
+                 Id = 100,
+                 FirstName = "Daniel",
+                 LastName = "Zelaya",
+                 Age = 20,
+                 Drives = true,
+                 BloodType = 'O',
+                 Birthday = new DateTime(1995, 10, 1, 23, 45, 0)
+            };
+
+            var result = serializer.Serialize(person);
+
+            Assert.AreEqual("<Person>" +
+                            "<Id>100</Id><FirstName>Daniel</FirstName><LastName>Zelaya</LastName><Age>20</Age>" +
+                            "<Drives>True</Drives><BloodType>O</BloodType><Birthday>10/1/1995 11:45:00 PM</Birthday>" +
+                            "</Person>", 
+                            result, "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Class_With_Class_Properties()
+        {
+            var serializer = new XMLSerializer();
+
+            var player = new Player
+            {
+                Username = "wupa9",
+                Level = 48,
+                Thievery = new Skill
+                {
+                    Level = 30,
+                    Exp = 34590
+                }
+            };
+
+            var result = serializer.Serialize(player);
+
+            Assert.AreEqual("<Player>" +
+                                "<Username>wupa9</Username>" +
+                                "<Level>48</Level>" +
+                                "<Thievery>" +
+                                    "<Level>30</Level>" +
+                                    "<Exp>34590</Exp>" +
+                                "</Thievery>" +
+                            "</Player>",
+                            result, "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Class_With_Array_Property()
+        {
+            var serializer = new XMLSerializer();
+
+            var merchant = new Merchant
+            {
+                Name = "Al' Mazhiik",
+                Race = "Khajiit",
+                Inventory = new[]
+                {
+                    "Katana",
+                    "Steel Cuirass",
+                    "Leather Dagger",
+                    "Health Potion"
+                },
+                Items = new[]
+                {
+                    new Item("Lol1"),
+                    new Item("Lol2"),
+                    new Item("Lol3"),
+                    new Item("Lol4")
+                }
+            };
+
+            var result = serializer.Serialize(merchant);
+
+            var expected = "<Merchant>" +
+                               "<Name>Al' Mazhiik</Name>" +
+                               "<Race>Khajiit</Race>" +
+                               "<Inventory>" +
+                                   "<string>Katana</string>" +
+                                   "<string>Steel Cuirass</string>" +
+                                   "<string>Leather Dagger</string>" +
+                                   "<string>Health Potion</string>" +
+                               "</Inventory>" +
+                               "<Items>" +
+                                    "<Item><Name>Lol1</Name></Item>" +
+                                    "<Item><Name>Lol2</Name></Item>" +
+                                    "<Item><Name>Lol3</Name></Item>" +
+                                    "<Item><Name>Lol4</Name></Item>" +
+                               "</Items>" +
+                           "</Merchant>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Class_With_Property_Attributes()
+        {
+            var serializer = new XMLSerializer();
+
+            var user = new User
+            {
+                Username = "wupa9",
+                Password = "12345",
+                Points = 100,
+                MegaUltraProp = "LOL"
+            };
+
+            var result = serializer.Serialize(user);
+
+            var expected = "<User>" +
+                               "<Username>wupa9</Username>" +
+                               "<Pass>12345</Pass>" +
+                               "<Points>100</Points>" +
+                               "<MUP>LOL</MUP>" +
+                           "</User>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Serialize_Null()
+        {
+            new XMLSerializer().Serialize(null);
+        }
+
 
         [TestMethod]
         public void Serialize_Array_Of_Ints()
@@ -219,6 +352,125 @@ namespace XML_Serializer_Tests
                            "<year>1900</year><month>7</month><day>12</day>" +
                            "<hour>0</hour><minute>0</minute><second>0</second>" +
                            "</date>" +
+
+                           "</array>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Classes()
+        {
+            var serializer = new XMLSerializer();
+
+            var people = new[] {
+                new Person
+                {
+                    Id = 100,
+                },
+                new Person(),
+                new Person
+                {
+                    Id = 200,
+                    FirstName = "Lolis"
+                }
+            };
+
+            var result = serializer.Serialize(people);
+
+            var expected = "<array>" +
+
+                           "<Person>" +
+                           "<Id>100</Id><FirstName></FirstName><LastName></LastName><Age>0</Age>" +
+                           "<Drives>False</Drives><BloodType>"+'\0'+"</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
+                           "</Person>" +
+
+                           "<Person>" +
+                           "<Id>0</Id><FirstName></FirstName><LastName></LastName><Age>0</Age>" +
+                           "<Drives>False</Drives><BloodType>" + '\0' + "</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
+                           "</Person>" +
+
+                           "<Person>" +
+                           "<Id>200</Id><FirstName>Lolis</FirstName><LastName></LastName><Age>0</Age>" +
+                           "<Drives>False</Drives><BloodType>" + '\0' + "</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
+                           "</Person>" +
+
+                           "</array>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Classes_With_Class_Properties()
+        {
+            var serializer = new XMLSerializer();
+
+            var players = new[] {
+                new Player(),
+                new Player
+                {
+                    Username = "Wupa9",
+                    Level = 100,
+                    Thievery = new Skill
+                    {
+                        Level = 99,
+                        Exp = 99999
+                    }
+                },
+                new Player
+                {
+                    Username = "Dezy",
+                    Level = 74,
+                    Thievery = null
+                },
+                new Player
+                {
+                    Username = "Lolo",
+                    Level = 50,
+                    Thievery = new Skill
+                    {
+                        Level = 50,
+                        Exp = 53599
+                    }
+                }
+            };
+
+            var result = serializer.Serialize(players);
+
+            var expected = "<array>" +
+
+                          "<Player>" +
+                                "<Username></Username>" +
+                                "<Level>0</Level>" +
+                                "<Thievery>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
+                          "<Player>" +
+                                "<Username>Wupa9</Username>" +
+                                "<Level>100</Level>" +
+                                "<Thievery>" +
+                                    "<Level>99</Level>" +
+                                    "<Exp>99999</Exp>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
+                            "<Player>" +
+                                "<Username>Dezy</Username>" +
+                                "<Level>74</Level>" +
+                                "<Thievery>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
+                            "<Player>" +
+                                "<Username>Lolo</Username>" +
+                                "<Level>50</Level>" +
+                                "<Thievery>" +
+                                    "<Level>50</Level>" +
+                                    "<Exp>53599</Exp>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
 
                            "</array>";
 
