@@ -42,7 +42,7 @@ namespace XML_Serializer
             return "<date>" + year + month + day + hour + minute + second + "</date>";
         }
 
-        private string SerializeOtherObject(object obj)
+        private string SerializeClassObject(object obj)
         {
             var xml = "";
 
@@ -70,7 +70,7 @@ namespace XML_Serializer
                 propertyXml = ReplaceRootTagName( GetArraySerialization(propValue), propName );
 
             else if (PropertyIsAValidClass(propInfo) && propValue != null)
-                propertyXml = ReplaceRootTagName( SerializeOtherObject(propValue), propName );
+                propertyXml = ReplaceRootTagName( SerializeClassObject(propValue), propName );
 
             else propertyXml = "<" + propName + ">" + propValue + "</" + propName + ">";
 
@@ -115,7 +115,7 @@ namespace XML_Serializer
             if (obj is DateTime)
                 return SerializeDate((DateTime)obj);
 
-            return SerializeOtherObject(obj);
+            return SerializeClassObject(obj);
         }
 
         private string GetArraySerialization(object obj)
@@ -135,7 +135,7 @@ namespace XML_Serializer
             if (obj is DateTime[])
                 return SerializeArray((IEnumerable)obj, o => SerializeDate((DateTime)o));
             
-            return SerializeArray((IEnumerable)obj, SerializeOtherObject);
+            return SerializeArray((IEnumerable)obj, SerializeClassObject);
         }
 
         private bool IsNumber(object obj)
