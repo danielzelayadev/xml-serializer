@@ -51,7 +51,7 @@ namespace XML_Serializer
         {
             var xml = "";
 
-            Type type = obj.GetType();
+            var type = obj.GetType();
 
             var className = TrimToClassName(type.FullName);
 
@@ -60,7 +60,11 @@ namespace XML_Serializer
                 var propName = propInfo.Name;
                 var propValue = propInfo.GetValue(obj);
 
-                xml += "<" + propName + ">" + propValue + "</" + propName + ">";
+                if ( PropertyIsAValidClass(propInfo) && propValue != null )
+                    xml += ReplaceRootTagName(SerializeOtherObject(propValue), propName);
+
+                else 
+                    xml += "<" + propName + ">" + propValue + "</" + propName + ">";
             }
 
             return "<" + className + ">" + xml + "</" + className + ">";
@@ -156,6 +160,22 @@ namespace XML_Serializer
         private string SerializeNumber(object num)
         {
             return "<num>" + num.ToString() + "</num>";
+        }
+
+        private bool PropertyIsAValidClass(PropertyInfo propInfo)
+        {
+            return propInfo.PropertyType.IsClass &&
+                   propInfo.PropertyType.ToString() != "System.String" &&
+                   propInfo.PropertyType.ToString() != "System.DateTime";
+        }
+
+        private string ReplaceRootTagName(string xml, string newName)
+        {
+            var openRootTagEndIndex = xml.IndexOf(">");
+
+            var oldName = xml.Substring(1, openRootTagEndIndex - 1);
+
+            return xml.Replace(oldName, newName); ;
         }
 
         private string TrimToClassName(string fullName)

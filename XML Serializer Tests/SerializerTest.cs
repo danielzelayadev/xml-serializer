@@ -115,6 +115,35 @@ namespace XML_Serializer_Tests
         }
 
         [TestMethod]
+        public void Serialize_Class_With_Class_Properties()
+        {
+            var serializer = new XMLSerializer();
+
+            var player = new Player
+            {
+                Username = "wupa9",
+                Level = 48,
+                Thievery = new Skill
+                {
+                    Level = 30,
+                    Exp = 34590
+                }
+            };
+
+            var result = serializer.Serialize(player);
+
+            Assert.AreEqual("<Player>" +
+                                "<Username>wupa9</Username>" +
+                                "<Level>48</Level>" +
+                                "<Thievery>" +
+                                    "<Level>30</Level>" +
+                                    "<Exp>34590</Exp>" +
+                                "</Thievery>" +
+                            "</Player>",
+                            result, "Should return the correct xml representation.");
+        }
+
+        [TestMethod]
         public void Serialize_Null()
         {
             var serializer = new XMLSerializer();
@@ -268,7 +297,7 @@ namespace XML_Serializer_Tests
             var people = new[] {
                 new Person
                 {
-                    Id = 100
+                    Id = 100,
                 },
                 new Person(),
                 new Person
@@ -296,6 +325,83 @@ namespace XML_Serializer_Tests
                            "<Id>200</Id><FirstName>Lolis</FirstName><LastName></LastName><Age>0</Age>" +
                            "<Drives>False</Drives><BloodType>" + '\0' + "</BloodType><Birthday>1/1/0001 12:00:00 AM</Birthday>" +
                            "</Person>" +
+
+                           "</array>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
+        public void Serialize_Array_Of_Classes_With_Class_Properties()
+        {
+            var serializer = new XMLSerializer();
+
+            var players = new[] {
+                new Player(),
+                new Player
+                {
+                    Username = "Wupa9",
+                    Level = 100,
+                    Thievery = new Skill
+                    {
+                        Level = 99,
+                        Exp = 99999
+                    }
+                },
+                new Player
+                {
+                    Username = "Dezy",
+                    Level = 74,
+                    Thievery = null
+                },
+                new Player
+                {
+                    Username = "Lolo",
+                    Level = 50,
+                    Thievery = new Skill
+                    {
+                        Level = 50,
+                        Exp = 53599
+                    }
+                }
+            };
+
+            var result = serializer.Serialize(players);
+
+            var expected = "<array>" +
+
+                          "<Player>" +
+                                "<Username></Username>" +
+                                "<Level>0</Level>" +
+                                "<Thievery>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
+                          "<Player>" +
+                                "<Username>Wupa9</Username>" +
+                                "<Level>100</Level>" +
+                                "<Thievery>" +
+                                    "<Level>99</Level>" +
+                                    "<Exp>99999</Exp>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
+                            "<Player>" +
+                                "<Username>Dezy</Username>" +
+                                "<Level>74</Level>" +
+                                "<Thievery>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
+                            "<Player>" +
+                                "<Username>Lolo</Username>" +
+                                "<Level>50</Level>" +
+                                "<Thievery>" +
+                                    "<Level>50</Level>" +
+                                    "<Exp>53599</Exp>" +
+                                "</Thievery>" +
+                            "</Player>" +
+
 
                            "</array>";
 
