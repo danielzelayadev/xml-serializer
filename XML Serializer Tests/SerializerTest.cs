@@ -191,6 +191,31 @@ namespace XML_Serializer_Tests
         }
 
         [TestMethod]
+        public void Serialize_Class_With_Property_Attributes()
+        {
+            var serializer = new XMLSerializer();
+
+            var user = new User
+            {
+                Username = "wupa9",
+                Password = "12345",
+                Points = 100,
+                MegaUltraProp = "LOL"
+            };
+
+            var result = serializer.Serialize(user);
+
+            var expected = "<User>" +
+                               "<Username>wupa9</Username>" +
+                               "<Pass>12345</Pass>" +
+                               "<Points>100</Points>" +
+                               "<MUP>LOL</MUP>" +
+                           "</User>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Serialize_Null()
         {

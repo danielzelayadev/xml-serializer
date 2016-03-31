@@ -36,7 +36,10 @@ namespace XML_Serializer
 
             foreach (var propInfo in type.GetProperties())
             {
-                var propName = propInfo.Name;
+                var attrs = propInfo.GetCustomAttributes(true);
+                var XMLName = GetXMLName(attrs);
+
+                var propName =  XMLName.Length > 0 ? XMLName : propInfo.Name;
                 var propValue = propInfo.GetValue(obj);
 
                 if ( propValue is object[] )
@@ -142,6 +145,18 @@ namespace XML_Serializer
         private string SerializeNumber(object num)
         {
             return "<num>" + num.ToString() + "</num>";
+        }
+
+        private string GetXMLName(object[] attrs)
+        {
+            foreach (var attr in attrs)
+            {
+                XMLNameAttribute xattr = attr as XMLNameAttribute;
+
+                if (xattr != null) return xattr.Name;
+            }
+
+            return "";
         }
 
         private bool PropertyIsAValidClass(PropertyInfo propInfo)

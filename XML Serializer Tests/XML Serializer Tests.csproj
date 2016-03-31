@@ -58,6 +58,7 @@
     <Compile Include="SerializerTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Skill.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XML Serializer\XML Serializer.csproj">
