@@ -258,6 +258,27 @@ namespace XML_Serializer_Tests
         }
 
         [TestMethod]
+        public void Serialize_Class_With_Fields()
+        {
+            var serializer = new XMLSerializer();
+
+            var student = new Student
+            {
+                Name = "Johnny",
+                Age = 16
+            };
+
+            var result = serializer.Serialize(student);
+
+            var expected = "<Student>" +
+                               "<Name>Johnny</Name>" +
+                               "<Age>16</Age>" +
+                           "</Student>";
+
+            Assert.AreEqual(expected, result, "Should return correct xml representation.");
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Serialize_Null()
         {
