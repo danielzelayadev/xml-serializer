@@ -49,33 +49,36 @@ namespace XML_Serializer
             var type = obj.GetType();
             var className = TrimToClassName(type.FullName);
             var properties = type.GetProperties();
+            var fields = type.GetFields();
 
             foreach (var propInfo in properties)
-                xml += SerializeProperty(propInfo, obj);
+                xml += SerializeMember(propInfo, propInfo.GetValue(obj), obj);
+
+            foreach (var fieldInfo in fields)
+                xml += SerializeMember(fieldInfo, fieldInfo.GetValue(obj), obj);
 
             return "<" + className + ">" + xml + "</" + className + ">";
         }
 
-        private string SerializeProperty(PropertyInfo propInfo, object obj)
+        private string SerializeMember(MemberInfo memberInfo, object memberValue, object obj)
         {
-            var propertyXml = "";
+            var memberXml = "";
 
-            var attrs = propInfo.GetCustomAttributes(true);
+            var attrs = memberInfo.GetCustomAttributes(true);
             var XMLName = GetXMLName(attrs);
 
-            var propName = XMLName.Length > 0 ? XMLName : propInfo.Name;
-            var propValue = propInfo.GetValue(obj);
+            var memberName = XMLName.Length > 0 ? XMLName : memberInfo.Name;
 
-            if (propValue is object[])
-                propertyXml = ReplaceRootTagName( GetArraySerialization(propValue), propName );
+            if (memberValue is object[])
+                memberXml = ReplaceRootTagName( GetArraySerialization(memberValue), memberName );
 
-            else if (PropertyIsAValidClass(propInfo) && propValue != null)
-                propertyXml = ReplaceRootTagName( SerializeClassObject(propValue), propName );
+            else if (MemberIsAValidClass(memberInfo) && memberValue != null)
+                memberXml = ReplaceRootTagName( SerializeClassObject(memberValue), memberName );
 
             else 
-                propertyXml = "<" + propName + ">" + propValue + "</" + propName + ">";
+                memberXml = "<" + memberName + ">" + memberValue + "</" + memberName + ">";
 
-            return propertyXml;
+            return memberXml;
         }
 
         private string SerializeArray(IEnumerable objs, SerializeCallback sc)
@@ -169,11 +172,21 @@ namespace XML_Serializer
             return xml.Replace(oldName, newName); ;
         }
 
-        private bool PropertyIsAValidClass(PropertyInfo propInfo)
+        private bool MemberIsAValidClass(MemberInfo memberInfo)
         {
-            return propInfo.PropertyType.IsClass &&
-                   propInfo.PropertyType.ToString() != "System.String" &&
-                   propInfo.PropertyType.ToString() != "System.DateTime";
+            var isClass = memberInfo is PropertyInfo
+                          ? ((PropertyInfo)memberInfo).PropertyType.IsClass
+                          : ((FieldInfo)memberInfo).FieldType.IsClass;
+            
+            var notString = memberInfo is PropertyInfo
+                          ? ((PropertyInfo)memberInfo).PropertyType.ToString() != "System.String"
+                          : ((FieldInfo)memberInfo).FieldType.ToString() != "System.String";
+
+            var notDate = memberInfo is PropertyInfo
+                          ? ((PropertyInfo)memberInfo).PropertyType.ToString() != "System.DateTime"
+                          : ((FieldInfo)memberInfo).FieldType.ToString() != "System.DateTime";
+
+            return isClass && notString && notDate;
         }
 
         private string GetXMLName(object[] attrs)
